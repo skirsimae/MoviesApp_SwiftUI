@@ -20,12 +20,12 @@ struct Results: Decodable, Identifiable {
     let overview: String
 }
 
-struct Info: Codable {
+struct Info: Decodable {
     let genres: [Genres]
 }
 
-struct Genres: Codable {
-    let name: String
+struct Genres: Decodable {
+    var name: String
 }
 
 struct Videos: Codable {
@@ -35,3 +35,4 @@ struct Videos: Codable {
 struct Trailers: Codable {
     let key: String
 }
+

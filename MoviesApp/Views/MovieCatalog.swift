@@ -7,32 +7,38 @@
 //
 
 import SwiftUI
+import KingfisherSwiftUI
 
 struct MovieCatalog: View {
     @ObservedObject var movieManager = MovieManager()
     
+    init() {
+        //Use this if NavigationBarTitle is with Large Font
+        UINavigationBar.appearance().largeTitleTextAttributes = [.font : UIFont(name: "HelveticaNeue-Bold", size: 22)!]
+
+        //Use this if NavigationBarTitle is with displayMode = .inline
+        //UINavigationBar.appearance().titleTextAttributes = [.font : UIFont(name: "Georgia-Bold", size: 20)!]
+    }
+    
     var body: some View {
         NavigationView {
             List(movieManager.results) { result in
+                NavigationLink(destination: MovieDetails(movie: result, url: "https://image.tmdb.org/t/p/w500/" + (result.poster_path), title: result.title, release_date: result.release_date, overview: result.overview)) {
+                        EmptyView()
+                }.frame(width: 0, height: 0)
                 HStack {
-                    AsyncImage(
-                        url: URL(string: "https://image.tmdb.org/t/p/w500/" + (result.poster_path ))!,
-                        placeholder: Text("Loading ...")
-                    )
-                        .frame(width: 150)
-                        
+                    KFImage(URL(string: "https://image.tmdb.org/t/p/w200/" + (result.poster_path))!).resizable().frame(width: 150, height: 200)
                     Text(result.title)
                 }
-                .frame(height: 150)
             }
-            .navigationBarTitle("Movie Catalog")
-        }
-            //call fetMovies on page load
-            .onAppear {
-                self.movieManager.fetchMovies()
+            .navigationBarTitle(Text("Movie Catalog").font(.body), displayMode: .large)
+            
+        }.onAppear {
+            self.movieManager.fetchMovies()
         }
     }
 }
+
 
 struct MovieCatalog_Previews: PreviewProvider {
     static var previews: some View{
@@ -40,30 +46,11 @@ struct MovieCatalog_Previews: PreviewProvider {
     }
 }
 
-struct AsyncImage<Placeholder: View>: View {
-    @ObservedObject private var loader: ImageFetcher
-    private let placeholder: Placeholder?
-    
-    init(url: URL, placeholder: Placeholder? = nil) {
-        loader = ImageFetcher(url: url)
-        self.placeholder = placeholder
-    }
 
-    var body: some View {
-        image
-            .onAppear(perform: loader.load)
-            .onDisappear(perform: loader.cancel)
-    }
-    
-    private var image: some View {
-        Group {
-            if loader.image != nil {
-                Image(uiImage: loader.image!)
-                    .resizable()
-            } else {
-                placeholder
-            }
-        }
-    }
-}
+let imageUrlString = "http://cdn.playbuzz.com/cdn/38402fff-32a3-4e78-a532-41f3a54d04b9/cc513a85-8765-48a5-8481-98740cc6ccdc.jpg"
 
+let imageUrl = URL(string: imageUrlString)!
+
+let imageData = try! Data(contentsOf: imageUrl)
+
+let image = UIImage(data: imageData)

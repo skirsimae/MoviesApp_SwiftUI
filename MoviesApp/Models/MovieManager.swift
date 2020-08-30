@@ -22,6 +22,7 @@ protocol MovieTrailerDelegate {
 
 class MovieManager: ObservableObject {
     @Published var results = [Results]()
+    @Published var genres = Genres(name: "")
     
     let key = moviesAPIKey
     let baseURL = "https://api.themoviedb.org/3/movie/"
@@ -62,7 +63,7 @@ class MovieManager: ObservableObject {
         //Start the task
         task.resume()
     }
-    
+
     func fetchGenre(movie: Results?) {
         guard let id = movie?.id else { return }
 
@@ -85,7 +86,15 @@ class MovieManager: ObservableObject {
              do {
                 let decoder = JSONDecoder()
                 let results = try decoder.decode(Info.self, from: data)
-                self.infoDelegate?.didUpdateGenres(self, info: results)
+                var genresLabel = ""
+                DispatchQueue.main.async {
+                    for genre in results.genres {
+                        genresLabel = (genresLabel) + "\(genre.name), "
+                    }
+                    //Remove last two characters (comma and space) from the string
+                    genresLabel = String(genresLabel.dropLast(2))
+                    self.genres.name = genresLabel
+                }
              }
              catch {
                  debugPrint(error)

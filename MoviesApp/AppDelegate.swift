@@ -8,6 +8,7 @@
 
 import UIKit
 import CoreData
+import KingfisherSwiftUI
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
